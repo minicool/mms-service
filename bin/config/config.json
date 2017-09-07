@@ -1,0 +1,13 @@
+{
+  "ser_conf": {
+    "host": "127.0.0.1",
+    "port": 30333
+  },
+  "db_conf": {
+    "host": "127.0.0.1",
+    "port": 3306,
+    "db": "mms_service",
+    "user": "root",
+    "pass": "123456"
+  }
+}

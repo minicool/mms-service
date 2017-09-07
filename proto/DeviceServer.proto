@@ -1,0 +1,134 @@
+﻿
+syntax = "proto3";
+//c++
+package RFIDDevice;
+//java
+option java_multiple_files = true;
+option java_package = "com.hxd.zcsys.device";
+option java_outer_classname = "RFIDDevice";
+option objc_class_prefix = "DEV";
+//go
+option go_package = "RFIDDevice";
+
+// Error Message
+// 错误消息返回
+enum ERRORCODE {
+  ERRORCODE_NONE = 0;					//正常
+  EXCUTION_ERROR = 1001;				//执行失败
+  ACCESS_FAILURE = 1002;
+  SYSTEM_BUSY = 1003;		
+  FAILED_CONNECT_RFIDCARD = 1004;		//连接读写卡失败
+  FAILED_CONNECT_RFIDCARDER = 1005;		//连接写卡器失败
+  FAILED_CONNECT_RFIDPRINTER = 1006;	//连接打印机失败
+}
+
+message ErrorMessage {
+  ERRORCODE errorCode = 1;
+  string errorMsg = 2;  
+}
+
+//DeviceRegedit
+// 硬件系统注册
+enum DEVICETYPE{
+  TYPE_NONE = 0;//未知
+  PRINT = 1;    //打印机
+  CARD = 2;     //发卡器
+  READ = 3;     //报警器
+}
+
+message DeviceRegeditRequest{
+  string device_name = 1;     //设备名称
+  DEVICETYPE device_type = 2; //设备类型
+  string ip_add = 3;          //客户端网络地址
+  int32 ip_port = 4;          //客户端网络端口
+  string mac_add = 5;         //mac地址
+}
+
+message DeviceRegeditResponse{
+  bool success = 1;  			//是否执行成功
+  uint64 device_regedid = 2;    //返回注册ID
+  ErrorMessage errormsg = 3;	//错误消息
+}
+
+// RFIDcard
+// 物资管理系统向RFID发卡器发送数据
+//message RFIDcard_writeData_Request {
+//  string assetsId = 1;			//资产ID（唯一）
+//  string assetsName = 2;		//资产名称
+//}
+//
+//message RFIDcard_writeData_reply {
+//  string assetsGloballd = 1; 	//硬件标签全球唯一ID
+//  bool success = 2;  			//是否执行成功
+//  ErrorMessage errormsg = 3;	//错误消息
+//}
+
+//RFIDprint
+//物资管理系统向RFID打印机发送数据
+//message RFIDprint_writeData_Request {
+//  string assetsId = 1;			//资产ID（唯一）
+//  string companyName = 2;		//公司名称
+//  string devpementNmae = 3;		//部门名称
+//  string assetsName = 4;		//资产名称
+//  string assetsType = 5;		//资产类型
+//  string assetsModel = 6;		//资产型号
+//  string url = 7;				//web展示页
+//  string date = 8;				//创建时间
+//}
+//
+//message RFIDprint_writeData_reply {
+//  bool success = 1;  			//是否执行成功
+//  ErrorMessage errormsg = 2;	//错误消息
+//}
+
+//RFIDprintStream
+//物资管理系统向RFID打印机发送数据
+message RFIDprint_Data {
+  string assetsId = 1;			//资产ID（唯一）
+  string companyName = 2;		//公司名称
+  string devpementNmae = 3;		//部门名称
+  string assetsName = 4;		//资产名称
+  string assetsType = 5;		//资产类型
+  string assetsModel = 6;		//资产型号
+  string url = 7;				//web展示页
+  string date = 8;				//创建时间
+}
+
+message RFIDprint_writeDataStream_Request {
+  int64 device_regedid = 1;     //注册Id
+}
+
+message RFIDprint_writeDataStream_Response {
+  bool success = 1;  			//是否执行成功
+  RFIDprint_Data data = 2;      //打印数据
+  ErrorMessage errormsg = 3;	//错误消息
+}
+
+//RFIDread
+//RFID阅读器向物资管理系统发送数据
+//message AssetSunfo {
+//  string assetsId = 1;			//资产ID（唯一）
+//  string assetsName = 2;		//资产名称
+//}
+//
+//message RFIDread_writeData_Request {
+//  repeated AssetSunfo assetsInfo = 1; 	//资产读取列表
+//  string checkName = 2;					//检测地点
+//}
+//
+//message RFIDread_writeData_reply {
+//  bool success = 1;  			//是否执行成功
+//  ErrorMessage errormsg = 2;	//错误消息
+//}
+
+// The RFID Device service definition.
+service RFIDDeviceServer {
+  //DeviceRegedit
+  rpc DeviceRegedit(DeviceRegeditRequest) returns (DeviceRegeditResponse){}
+//  // RFID card
+//  rpc RFIDcard_writeData (RFIDcard_writeData_Request) returns (RFIDcard_writeData_reply) {}
+//  // RFID print
+//  rpc RFIDprint_writeData (RFIDprint_writeData_Request) returns (RFIDprint_writeData_reply) {}
+
+  rpc RFIDprint_writeData_stream (RFIDprint_writeDataStream_Request) returns (stream RFIDprint_writeDataStream_Response) {}
+}
